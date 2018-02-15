@@ -61,6 +61,7 @@ from tensorflow.python.client import device_lib
 device_lib.list_local_devices()
 
 #Kullandığımız RAM bilgilerini öğrenmek için,
+
 !cat /proc/meminfo
 
 #Kullandığımız CPU bilgilerini öğrenmek için
