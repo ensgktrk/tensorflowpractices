@@ -1,6 +1,8 @@
 
 """
-Tensorflow öğremek amacıyla yapılmış olan bu çalışma da referans alınan kodlar ve genel açıklamalarına ulaşmak için:
+Tensorflow öğremek amacıyla yapılmış olan bu çalışma da referans alınan kodlara ve
+genel açıklamalarına ulaşmak için:
+
 "https://www.tensorflow.org/versions/r1.1/get_started/get_started"
 
 Kodları çalıştırmak ve pratik yapmak için Google Colabaratory kullanılmıştır.
@@ -74,11 +76,13 @@ device_lib.list_local_devices()
 
 import tensorflow as tf
 
-"""A computational graph is a series of TensorFlow operations arranged into a graph of nodes.
+"""
+A computational graph is a series of TensorFlow operations arranged into a graph of nodes.
 Let's build a simple computational graph. Each node takes zero or more tensors as inputs and produces a tensor as an output.
 One type of node is a constant. Like all TensorFlow constants, it takes no inputs, and it outputs a value it stores internally.
-We can create two floating point Tensors node1 and node2 as follows:"""
-#
+We can create two floating point Tensors node1 and node2 as follows:
+"""
+
 node1=tf.constant(3.0,tf.float32)
 node2=tf.constant(4.0) #also tf.float32 implicitly
 
@@ -86,12 +90,14 @@ print(node1,node2)
 
 """Notice that printing the nodes does not output the values 3.0 and 4.0 as you might expect. Instead, they are nodes that,
 when evaluated, would produce 3.0 and 4.0, respectively.
+
 **To actually evaluate the nodes, we must run the computational graph within a session.
 A session encapsulates the control and state of the TensorFlow runtime.**"""
 
 """Sabit değer olarak tf.constant ile atadığımız değerlerin yazdır dediğimizde istediğimiz gibi yazılmadığını gördük.
 Tensorflowda node olarak oluşturduğumuz sabit veya herhangibir işlemi gerçekten çalıştırmak istersek önce bir session
 daha sonrasında run komutu ile çalıştırabiliriz."""
+
 sess=tf.Session()
 print(sess.run([node1]))
 print(sess.run([node2]))
@@ -110,7 +116,9 @@ toplayıcı_node=a+b # direk olarak toplama işlemi yapmak bizi tf.add yaparak y
 print(sess.run(toplayıcı_node, {a:3, b:4.5}))
 print(sess.run(toplayıcı_node, {a: [1,3], b:[2,4]}))
 
-"""Placeholder oluşturmadan önce a ve b değerlerini biz verip daha sonra yapmak istediğimiz işlemleri belli olan değerler üzerinden istediğin gibi yapabilirsin. Sitede de bahsedildiği gibi placeholder aslında programa bir söz vermektir. Yani ben a=tf.placeholder(float32)diyerek a değerine daha sonra program içerisinde kullanılma sözü vaeriyorum. 
+"""Placeholder oluşturmadan önce a ve b değerlerini biz verip daha sonra yapmak istediğimiz işlemleri belli olan değerler üzerinden
+istediğin gibi yapabilirsin. Sitede de bahsedildiği gibi placeholder aslında programa bir söz vermektir.
+Yani ben a=tf.placeholder(float32)diyerek 'a' değerine daha sonra program içerisinde kullanılma sözü veriyorum. 
 Yukarıda uygulamada da görüldüğü gibi istediğim zaman istediğim değerle daha önce oluşturduğum boşluğu kullanabiliyorum. 
 **Placeholder bu işe yarıyor.**
 """
@@ -118,54 +126,70 @@ Yukarıda uygulamada da görüldüğü gibi istediğim zaman istediğim değerle
 add_and_tripple=toplayıcı_node * 3 
 print(sess.run(add_and_tripple, {a:3, b: 4.5}))
 
-"""In machine learning we will typically want a model that can take arbitrary inputs, such as the one above. To make the model trainable, we need to be able to modify the graph to get new outputs with the same input. Variables allow us to add trainable parameters to a graph. They are constructed with a type and initial value:"""
+"""In machine learning we will typically want a model that can take arbitrary inputs, such as the one above.
+To make the model trainable,we need to be able to modify the graph to get new outputs with the same input.
+Variables allow us to add trainable parameters to a graph. They are constructed with a type and initial value:"""
 
 W=tf.Variable([.3], tf.float32)
 b=tf.Variable([-.3], tf.float32)
 x=tf.placeholder(tf.float32)
 linear_model=(W*x)+b
 
-"""### **Constants are initialized when you call tf.constant, and their value can never change. By contrast, variables are not initialized when you call tf.Variable. To initialize all the variables in a TensorFlow program, you must explicitly call a special operation as follows:**"""
+"""### **Constants are initialized when you call tf.constant, and their value can never change.
+By contrast, variables are not initialized when you call tf.Variable.
+To initialize all the variables in a TensorFlow program, you must explicitly call a special operation as follows:**"""
 
 """tf.Variable olarak belirlediğimiz değerlerimiz başlatılamadığı için öncelikle aşağıda ki adımların yapılması gerekir."""
 
 init=tf.global_variables_initializer()
 sess.run(init)
 
-"""It is important to realize init is a handle to the TensorFlow sub-graph that initializes all the global variables. Until we call sess.run, the variables are uninitialized."""
-
+"""It is important to realize init is a handle to the TensorFlow sub-graph that initializes all the global variables.
+Until we call sess.run, the variables are uninitialized."""
 print(sess.run(linear_model, {x:[1,2,3,4]}))
 
-"""We've created a model, but we don't know how good it is yet. To evaluate the model on training data, we need a **y** placeholder to provide the desired values, and we need to write a loss function.
 
-A loss function measures how far apart the current model is from the provided data. We'll use a standard loss model for linear regression, which sums the squares of the deltas between the current model and the provided data. 
+"""We've created a model, but we don't know how good it is yet. To evaluate the model on training data,
+we need a **y** placeholder to provide the desired values, and we need to write a loss function.
 
-**linear_model - y** creates a vector where each element is the corresponding example's error delta. We call tf.square to square that error. Then, we sum all the squared errors to create a single scalar that abstracts the error of all examples using tf.reduce_sum:
+A loss function measures how far apart the current model is from the provided data.
+We'll use a standard loss model for linear regression, which sums the squares of the deltas between the current model and the provided data. 
+
+**linear_model - y** creates a vector where each element is the corresponding example's error delta.
+We call tf.square to square that error. Then, we sum all the squared errors to create a single scalar
+that abstracts the error of all examples using tf.reduce_sum:
 """
-
 y=tf.placeholder(tf.float32)
 squared_deltas= tf.square(linear_model - y)
 loss=tf.reduce_sum(squared_deltas)
 print(sess.run(loss, {x:[1,2,3,4], y:[0,-1,-2,-3]}))
 
-"""We could improve this manually by reassigning the values of W and b to the perfect values of -1 and 1. A variable is initialized to the value provided to tf.Variable but can be changed using operations like tf.assign. For example, W=-1 and b=1 are the optimal parameters for our model. We can change W and b accordingly:"""
-
+"""We could improve this manually by reassigning the values of W and b to the perfect values of -1 and 1.
+A variable is initialized to the value provided to tf.Variable but can be changed using operations like tf.assign.
+For example, W=-1 and b=1 are the optimal parameters for our model. We can change W and b accordingly:"""
 fixW=tf.assign(W, [-1.0])
 fixb=tf.assign(b, [1.])
 sess.run([fixW,fixb])
 print(sess.run(loss, {x:[1,2,3,4], y:[0,-1,-2,-3]}))
 
-"""We guessed the "perfect" values of W and b, but the whole point of machine learning is to find the correct model parameters automatically. We will show how to accomplish this in the next section.
+"""We guessed the "perfect" values of W and b, but the whole point of machine learning is to find the correct model parameters automatically.
+We will show how to accomplish this in the next section.
+
+
 
 ### **tf.train.API**
 
 ---
 
-A complete discussion of machine learning is out of the scope of this tutorial. However, TensorFlow provides optimizers that slowly change each variable in order to minimize the loss function. The simplest optimizer is gradient descent. It modifies each variable according to the magnitude of the derivative of loss with respect to that variable. In general, computing symbolic derivatives manually is tedious and error-prone. Consequently, TensorFlow can automatically produce derivatives given only a description of the model using the function tf.gradients. For simplicity, optimizers typically do this for you. For example,
+A complete discussion of machine learning is out of the scope of this tutorial.
+However, TensorFlow provides optimizers that slowly change each variable in order to minimize the loss function.
+The simplest optimizer is gradient descent. It modifies each variable according to the magnitude of the derivative
+of loss with respect to that variable. In general, computing symbolic derivatives manually is tedious and error-prone.
+Consequently, TensorFlow can automatically produce derivatives given only a description of the model using the function tf.gradients.
+For simplicity, optimizers typically do this for you. For example,
 
 ---
 """
-
 optimizer=tf.train.GradientDescentOptimizer(0.01)
 train=optimizer.minimize(loss)
 
@@ -174,6 +198,7 @@ for i in range(1):
   sess.run(train, {x:[1,2,3,4], y:[0,-1,-2,-3]})
   
 print (sess.run([W,b]))
+
 
 """Now we have done actual machine learning! Although doing this simple
 linear regression doesn't require much TensorFlow core code, more complicated
@@ -220,6 +245,7 @@ for i in range(1000):
 #evaluate train accuracy 
 curr_W, curr_b, curr_loss = sess.run([W, b,loss] , {x:x_train, y:y_train})
 print("W: %s b: %s loss: %s" %(curr_W, curr_b, curr_loss) )
+
 
 """### **tf.contrib.learn**
 
@@ -271,9 +297,13 @@ print(estimator.evaluate(input_fn=input_fn))
 
 """### **A custom model**
 
-**tf.contrib.learn** does not lock you into its predefined models. Suppose we wanted to create a custom model that is not built into TensorFlow. We can still retain the high level abstraction of data set, feeding, training, etc. of **tf.contrib.learn**. For illustration, we will show how to implement our own equivalent model to **LinearRegressor** using our knowledge of the lower level TensorFlow API.
+**tf.contrib.learn** does not lock you into its predefined models. Suppose we wanted to create a custom model that is not built into TensorFlow.
+We can still retain the high level abstraction of data set, feeding, training, etc. of **tf.contrib.learn**.
+For illustration, we will show how to implement our own equivalent model to **LinearRegressor** using our knowledge of the lower level TensorFlow API.
 
-To define a custom model that works with **tf.contrib.learn**, we need to use **tf.contrib.learn.Estimator**. **tf.contrib.learn.LinearRegressor** is actually a sub-class of **tf.contrib.learn.Estimato**r. Instead of sub-classing **Estimator**, we simply provide Estimator a function **model_fn** that tells **tf.contrib.learn** how it can evaluate predictions, training steps, and loss. The code is as follows:
+To define a custom model that works with **tf.contrib.learn**, we need to use **tf.contrib.learn.Estimator**. **tf.contrib.learn.LinearRegressor** is
+actually a sub-class of **tf.contrib.learn.Estimato**r. Instead of sub-classing **Estimator**, we simply provide Estimator a function **model_fn** that
+tells **tf.contrib.learn** how it can evaluate predictions, training steps, and loss. The code is as follows:
 """
 
 import numpy as np
